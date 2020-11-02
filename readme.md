@@ -1,12 +1,12 @@
-# Boozang Docker Test runner container (XVFB + Puppeteer)
+# Boozang Docker Test runner container (XVFB + Playwright)
 
-[`styrman/boozang`](https://hub.docker.com/r/styrman/boozang-runner/)
+[`styrman/boozang`](https://hub.docker.com/r/styrman/boozang-playwright/)
 
-A [Boozang](https://boozang.com/) container, based on [nsourov/Puppeteer-with-xvfb](https://github.com/nsourov/Puppeteer-with-xvfb), to run Boozang tests in a browser with Xvfb.
+A [Boozang](https://boozang.com/) container, based on the official Playwright Docker container: hmcr.microsoft.com/playwright:bionic, to run Boozang tests in a browser with Xvfb.
 
 ## Description
 
-This container executes a *Boozang* test (or test suite) defined by the provided *Boozang* test URL, in an [Chromium](https://www.chromium.org/) browser (via [Puppeteer](https://developers.google.com/web/tools/puppeteer/)) using a virtual frame buffer (Xvfb).
+This container executes a *Boozang* test (or test suite) defined by the provided *Boozang* test URL, in an [Chromium](https://www.chromium.org/) browser (via [Microsoft Playwright](https://github.com/microsoft/playwright)) using a virtual frame buffer (Xvfb).
 
 It returns an error code if the test fails, and its report can be accessed thanks to a docker volume.
 
@@ -14,7 +14,7 @@ This container is mainly designed to be integrated to a *Continuous Integration*
 
 ### Requirement
 
-Make sure to install Docker on your machine, and have a test created on the Boozang platform. Get the URL from the browser window by clicking the share icon or copy it from the browser window. You can also point to a test using the Alisas functionality under Settings.  
+Make sure to install Docker on your machine, and have a test created on the Boozang platform. Get the URL from the browser window by clicking the share icon or copy it from the browser window. 
 
 Get the authorization token (for non-public projects) on Boozang management (http://ai.boozang.com) -> Account -> Get Token.
 
@@ -24,7 +24,7 @@ Get the authorization token (for non-public projects) on Boozang management (htt
 
 The base command takes the **test URL** as a mandatory parameter:
 
-`docker run --rm  -v "$(pwd):/var/boozang/" styrman/boozang-runner "https://ai.boozang.com/extension?token=XXXXXXXXXXXXXXXXX5d35df3dd337ee52f36b113e#5d35df3dd337ee52f36b113e/0.0.1/m4/t3/"`
+`docker run --rm  -v "$(pwd):/var/boozang/" styrman/boozang-playwright "https://ai.boozang.com/extension?token=XXXXXXXXXXXXXXXXX5d35df3dd337ee52f36b113e#5d35df3dd337ee52f36b113e/0.0.1/m4/t3/"`
 
 * `--rm` can be specified to remove the container after the test execution.
 * `--shm-size 1G` should be specified to increase the memory available for the virtual browser
@@ -47,7 +47,7 @@ The following options can be specified.
 
 Example:
 
-`docker run --rm  -v "$(pwd):/var/boozang/" styrman/boozang-runner --screenshot "https://ai.boozang.com/extension?token=XXXXXXXXXXXXXXXXX5d35df3dd337ee52f36b113e#5d35df3dd337ee52f36b113e/0.0.1/m4/t3/"`
+`docker run --rm  -v "$(pwd):/var/boozang/" styrman/boozang-playwright --screenshot "https://ai.boozang.com/extension?token=XXXXXXXXXXXXXXXXX5d35df3dd337ee52f36b113e#5d35df3dd337ee52f36b113e/0.0.1/m4/t3/"`
 
 
 ### Accessing reports
@@ -56,4 +56,4 @@ The report and screenshot are written to the container `/var/boozang` volume.
 
 To retrieve them, the volume can be mapped to a local directory, this way:
 
-`docker run --rm  -v "$(pwd):/var/boozang/" styrman/boozang-runner "https://ai.boozang.com/extension?token=XXXXXXXXXXXXXXXXX5d35df3dd337ee52f36b113e#5d35df3dd337ee52f36b113e/0.0.1/m4/t3/"`
+`docker run --rm  -v "$(pwd):/var/boozang/" styrman/boozang-playwright "https://ai.boozang.com/extension?token=XXXXXXXXXXXXXXXXX5d35df3dd337ee52f36b113e#5d35df3dd337ee52f36b113e/0.0.1/m4/t3/"`
