@@ -18,14 +18,14 @@ const opts = {
   "device" : "",
   "screenshot": false,
   "token":"",
-  "userdatadir":"test",
+  "userdatadir":"userdata",
   "width":1280,
   "height":1024,
   "docker": false,
   "gtimeout": "",
   "notimeout": false,
   "timeout": "",
-  "video": false
+  "video": "none"
 }
 
 // Remove the first two arguments, which are the 'node' binary and the name
@@ -71,7 +71,7 @@ console.log("Example: Use --verbose for verbose logging (boolean example). Use -
     '--defaultViewport: null',
     ];
 
-  const browser = await chromium.launchPersistentContext("bananas",{
+  const browser = await chromium.launchPersistentContext(userdatadir,{
     headless: false,
     args: launchargs,
     launchType: "PERSISTENT"
@@ -112,29 +112,11 @@ console.log("Example: Use --verbose for verbose logging (boolean example). Use -
     Service.setPopup(popup)
   }
 
-
-  // let pages = await browser.pages();
-  // browser.on('targetcreated', async () => {
-    // console.log("New pop window *******")
-        // //console.log('New window/tab event created');
-        // pages = await browser.pages();
-        // //console.log("Pages length " + pages.length);
-        // setupPopup(); 
-        // Service.setPage(page);  
-  // });
-
-
-
   const page = await browser.newPage();
 
   page.on('popup', async dialog => {
     setupPopup(dialog)
   })
-
-  //await capture.stop()
-  //await browser.close();
-
-
 
   // Assign all log listeners
   Service.logMonitor(page,notimeout,gtimeout,timeout,file, browser,video)
