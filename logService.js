@@ -9,26 +9,18 @@ const Service = {
   capture:"",
   browser:"",
   result: 2,
-  logMonitor(page,notimeout,gtimeout,stdTimeout,reportPrefix, browser,video){
+  logMonitor(page,notimeout,reportPrefix, browser,video){
     Service.notimeout=notimeout
     Service.page=page
     Service.video=video
     
     console.log("Initializing logMonitor");
-    gtimeout && console.log("Override global timeout: " + gtimeout + " mins");
-    stdTimeout && console.log("Override action timeout: " + stdTimeout + " mins");
     reportPrefix && console.log("Override report prefix: " + reportPrefix);
 
     Service.browser = browser;
  
-    Service.stdTimeout=stdTimeout*60000||60000;
     Service.reportPrefix=reportPrefix ? reportPrefix + "_":"";
     
-    if(!notimeout&&gtimeout){
-      setTimeout(()=>{
-        Service.gracefulShutdown("Global timeout triggered - try to do graceful shutdown")
-      },gtimeout*60000)
-    }
     if(notimeout){
       clearTimeout(Service.status)
     }
@@ -139,6 +131,16 @@ const Service = {
         return (parseInt(msg.split(this.key)[1].trim())||0)+15000
       },
       msg:"Action timeout"
+    })
+
+    Service.addTask({
+      key:"update-std-timeout:",
+      fun(msg){
+        Service.stdTimeout = (parseInt(msg.split(this.key)[1].trim())||120000);
+        console.log("Setting std timeout to: " + Service.stdTimeout);
+        return Service.stdTimeout;
+      },
+      msg:"Standard timeout"
     })
 
     Service.addTask({
