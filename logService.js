@@ -123,8 +123,22 @@ const Service = {
       timeout:Service.stdTimeout
     })
   },
+  insertSetStdTimeout(){
+    Service.addTask({
+      key:"update-std-timeout:",
+      fun(msg){
+        Service.stdTimeout = (parseInt(msg.split(this.key)[1].trim())||120000);
+        console.log("Setting std timeout to: " + Service.stdTimeout);
+        return Service.stdTimeout;
+      },
+      msg:"Standard timeout"
+    })
+  },
   setRunTasks(){
     Service.taskMap={}
+    
+    Service.insertSetStdTimeout()
+
     Service.addTask({
       key:"ms:",
       fun(msg){
@@ -215,6 +229,9 @@ const Service = {
   },
   setEndTasks(){
     Service.taskMap={}
+
+    Service.insertSetStdTimeout()
+    
     Service.addTask({
       key:"Result:",
       fun(msg){
