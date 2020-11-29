@@ -64,11 +64,17 @@ console.log("Example: Use --verbose for verbose logging (boolean example). Use -
     '--defaultViewport: null',
     ];
 
-  const browser = await chromium.launchPersistentContext(userdatadir,{
-    headless: false,
-    args: launchargs,
-    launchType: "PERSISTENT"
+  const browser = await chromium.launch();
+  const version = await browser.version();
+  console.log("Running Chrome version: " + version);
+
+  
+  const persistentContext = await chromium.launchPersistentContext(userdatadir,{
+      headless: false,
+      args: launchargs,
+      launchType: "PERSISTENT"
   });
+
 
   function printStackTrace(app,err){
     console.error(
@@ -102,7 +108,8 @@ console.log("Example: Use --verbose for verbose logging (boolean example). Use -
   }
   */
 
-  const page = await browser.newPage();
+  const page = await persistentContext.newPage();
+  
 
   let url = result.args[0];
   if ((!opts.screenshot) && (!opts.listscenarios) && typeof (url) == 'string' && !url.endsWith("/run") && url.match(/\/m[0-9]+\/t[0-9]+/)) {
@@ -127,7 +134,7 @@ console.log("Example: Use --verbose for verbose logging (boolean example). Use -
   })
 
   // Assign all log listeners
-  Service.logMonitor(page,keepalive,file, inService, browser,video, saveVideo);
+  Service.logMonitor(page,keepalive,file, inService, persistentContext,video, saveVideo);
   if(listsuite||listscenarios){
     Service.setBeginningFun(function(){
       Service.insertFileTask(function(){
@@ -146,7 +153,9 @@ console.log("Example: Use --verbose for verbose logging (boolean example). Use -
     })
   }
 
+
   const response = await page.goto(url);
+  Service.setPage(page);
 
   page.on("error", idePrintStackTrace);
   page.on("pageerror", idePrintStackTrace);
