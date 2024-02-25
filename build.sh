@@ -12,4 +12,4 @@ USERNAME=styrman
 
 # image name
 IMAGE=boozang-playwright
-docker build -t $USERNAME/$IMAGE:latest .
+docker build --platform linux/amd64 -t $USERNAME/$IMAGE:latest .

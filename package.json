@@ -1,12 +1,12 @@
 {
   "name": "boozang",
-  "version": "4.1.0",
+  "version": "5.0.0",
   "description": "An Simple Driver for Chrome Headless basded on Puppeteer",
   "dependencies": {
-    "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "node-options": "latest",
-    "playwright": "^1.7.1",
-    "playwright-video": "^2.4.0"
+    "playwright": "latest",
+    "tree-kill": "latest",
+    "amqplib": "^0.8.0"
   },
   "bin": {
     "boozang": "index.js"
