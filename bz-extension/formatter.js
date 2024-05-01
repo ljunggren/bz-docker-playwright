@@ -877,18 +877,10 @@ input[type=number]{
       formatter.updateFormatLogSetting(setting)
       return
     }
-    if(!document.body){
-      return setTimeout(()=>formatter.exeFormag(setting,auto),1000)
-    }
     if(!document.body.innerHTML.includes("Boozang runner")&&!document.getElementsByTagName("iframe")[0]&&parent==window){
       if(!auto){
         alert("There is no boozang test log")
       }else{
-        for(let o of document.getElementsByTagName("A")){
-          if(o.innerHTML=="Full Log"){
-              o.click()
-          }
-        }
         if(Date.now()-auto>30000){
           return
         }else{
@@ -1832,8 +1824,8 @@ input[type=number]{
         }
         fd.center=fd.center||"Boozang"
         x=x.match(/(http.+[\/].+)\/extension.*[?&]token\=.+#([^\/]+)[\/]([^\/]+)([\/](m[0-9]+[\/]t[0-9]+)[\/]run)?/);
-
-        fd.startUrl=x[0].split("#")[0].replace(/token=[^&#]+/,"id="+x[2]).replace(/&(self|group)=[^&#]*/g,"")+"#"+x[2]+"/"+x[3]+"/"
+        
+        fd.startUrl=x[1]+"/extension?id="+x[2]+"#"+x[2]+"/"+x[3]+"/"
         fd.host=x[1]
         fd.project.code=x[2]
         fd.version=x[3]
@@ -2311,7 +2303,7 @@ input[type=number]{
   },
   openIDE:function(v){
     let fd=formatter.data
-    formatter.openWindow(fd.startUrl+v.replace(".","/"),"bz-master",`width=${screen.availWidth/2},height=${screen.availHeight}`)
+    formatter.openWindow(fd.host+"/extension?id="+fd.project.code+"#"+fd.project.code+"/"+fd.version+"/"+v.replace(".","/"),"bz-master",`width=${screen.availWidth/2},height=${screen.availHeight}`)
   },
   getPageInfo:function(x,sendResponse){
     let c=$("a[href=consoleFull]")[0]
@@ -2453,13 +2445,6 @@ input[type=number]{
   copyText:function(w){
     let el =$("<textarea readonly style='position:absolute;left:-9999px'></textarea>").appendTo(document.body);
     let v=(w.innerText||"").replace(/^[0-9]+\: /,"")
-    if(v.includes("==>")){
-      v=v.split("==>")[1]
-    }
-    if(v.includes(" = ")){
-      v=v.split(" = ")[1]
-    }
-
     let vv=v.match(/https?:\/\/.+/)
     v=vv?vv[0]:v
     el.val(v)
@@ -2524,7 +2509,7 @@ input[type=number]{
   },
   getCameraPath:function(v){
     let fd=formatter.data
-    return fd.host.replace(/^https?:/,"")+"/screenshot/"+fd.project.code+"/"+v+".jpg"
+    return fd.host+"/screenshot/"+fd.project.code+"/"+v+".jpg"
   },
   showCompare:function(){
     let o=$(".bz-pop-panel");

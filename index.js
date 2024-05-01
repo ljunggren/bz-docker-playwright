@@ -29,6 +29,7 @@ const opts = {
 // Remove the first two arguments, which are the 'node' binary and the name
 // of your script.
 const result = options.parse(process.argv.slice(2), opts);
+console.log("Result: ",result);
 const verbose = opts.verbose;
 const token = opts.token;
 const docker = opts.docker;
@@ -132,15 +133,15 @@ function start(reset){
   })
 
   
-  let url = result.args[0];
+  let url = result.args[0],tests;
   if ((!opts.screenshot) && (!opts.listscenarios) && typeof (url) == 'string' && !url.endsWith("/run") && url.match(/\/m[0-9]+\/t[0-9]+/)) {
     if (!url.endsWith("/")) {
         url += "/"
     }
     url += "run"
   }
-  
-  let tests = "";
+  //console.log("Url: ", url, reset);
+
   if(reset){
     url=url.replace(/\/run$/,"/")
   }else if(url.endsWith("/run")){
@@ -167,8 +168,7 @@ function start(reset){
   console.log("#### Updated browser for PW ###")
   // Assign all log listeners
   Service.logMonitor(page,testReset,keepalive,file,inService,LogLevelArray,browser);
-  console.log(2+": "+tests)
-  if(tests){
+ if(tests){
     console.log("Going to post tmp tasks .....")
     setTimeout(()=>{
       console.log("post task:"+tests)
