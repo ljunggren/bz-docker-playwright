@@ -112,11 +112,11 @@ function start(reset){
   
 
   function appPrintStackTrace(err){
-    Service.consoleMsg(err.message,"error","app");
+    Service.consoleMsg(err.stack,"error","app");
   }
 
   function idePrintStackTrace(err){
-    Service.consoleMsg(err.message,"error","ide");
+    Service.consoleMsg(err.stack,"error","ide");
     Service.chkIDE()  
   }
 
@@ -140,7 +140,7 @@ function start(reset){
     }
     url += "run"
   }
-  //console.log("Url: ", url, reset);
+  console.log("Url: ", url, reset);
 
   if(reset){
     url=url.replace(/\/run$/,"/")
@@ -197,6 +197,7 @@ function start(reset){
 
   //const version = await page.browser().version();
   //console.log("Running Chrome version: " + version);  const response = await page.goto(url);
+  console.log("Login by url with TOKEN: ", url);
   const response = await page.goto(url);
 
   Service.setPage(page,browser);
