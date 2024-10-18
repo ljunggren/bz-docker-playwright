@@ -1,6 +1,21 @@
 var bzFormat;
+let defaultCode={
+  identifyMaster:`function(){
+  return location.href.match(/[\/]console(Full)?$/)
+      || location.href.match(/[\/]builds[\/][0-9]+[\/]logs[\/][0-9]+$/)
+}`,
+  identifyWorker:`function(){
+  let k=location.href.match(/\/([0-9]+)\//)[1];
+  return [2,3].map(x=>{
+    return location.href.replace(k+"/consoleFull","ws/out_"+k+"_"+x+".log")
+  })
+}`,
+  lineClear:`function(line){
+  return (line||"").replace(/^[0-9]{4}-[^ ]+ /,"");
+}`
+}
 $("#home").click(()=>{
-  chrome.tabs.create({url: "https://www.boozang.com"});
+  chrome.tabs.create({url: "https://boozang.com"});
 })
 $("#ide").click(()=>{
   let p=bzFormat.account.project,
@@ -43,7 +58,9 @@ $(".bz-tab").click(function(){
   bzFormat.defTab=this.id.replace("Tab","")
   updateSetting()
 });
-
+$(".bz-refresh-code").click(function(e){
+  resetCode(this.attributes['code'].value)
+})
 // function getPageInfo(){
 //   chrome.tabs.query({active: true, currentWindow: true}, function(v){
 //     chrome.runtime.sendMessage({ pop:1,fun:"getPageInfo",data:v[0].id},(v)=>{
@@ -73,25 +90,20 @@ function init(){
         declareTime:6,
         initTime:2,
         autoFormat:false,
-        retrieveWorkerLog:false,
-        identifyMaster:`function(url){
-  return (url||location.href).match(/[\/]console(Full)?$/)
-}`,
-      identifyWorker:`function(url){
-  url=url||location.href;
-  let k=url.match(/\/([0-9]+)\//)[1];
-  return [2,3].map(x=>{
-    return url.replace(k+"/consoleFull","ws/out_"+k+"_"+x+".log")
-  })
-}`,
-      lineClear:`function(line){
-  return (line||"").replace(/^[0-9]{4}-[^ ]+ /,"");
-}`
+        lineClearChk:false,
+        withToken:false,
+        retrieveWorkerLog:false
       }
     }
     if(d["bz-log-format"]){
       bzFormat=JSON.parse(d["bz-log-format"])
     }
+
+bzFormat.identifyMaster=bzFormat.identifyMaster||defaultCode.identifyMaster
+bzFormat.identifyWorker=bzFormat.identifyWorker||defaultCode.identifyWorker
+bzFormat.lineClear=bzFormat.lineClear||defaultCode.lineClear
+
+
     if(!bzFormat.scenarioTime){
       bzFormat.scenarioTime=180
       if(bzFormat.testTime==180){
@@ -99,6 +111,9 @@ function init(){
       }
     }
     $("#autoFormat").attr("checked",bzFormat.autoFormat);
+    $("#lineClearChk").attr("checked",bzFormat.lineClearChk);
+    $("#withToken").attr("checked",bzFormat.withToken);
+    
     $("#retrieveWorkerLog").attr("checked",bzFormat.retrieveWorkerLog);
     
     $("#identifyMaster").val(bzFormat.identifyMaster)
@@ -114,7 +129,7 @@ function init(){
     $("#scenarioTime,#testTime,#declareTime,#initTime,#actionTime,#lineClear,#identifyMaster,#identifyWorker").blur(function(){
       updateSetting()
     })
-    $("#autoFormat,#retrieveWorkerLog").click(function(){
+    $("#autoFormat,#retrieveWorkerLog,#lineClearChk,#withToken").click(function(){
       updateSetting()
     })
     $("#login").click(function(){
@@ -308,14 +323,28 @@ function loadBranch(){
   })
 }
 
+function resetCode(k){
+  bzFormat[k]=defaultCode[k]
+  $("#"+k).val(bzFormat[k])
+  updateSetting()
+}
+
 function updateSetting(){
   bzFormat.autoFormat=$("#autoFormat")[0].checked
+  bzFormat.lineClearChk=$("#lineClearChk")[0].checked
+  bzFormat.withToken=$("#withToken")[0].checked
+  
   bzFormat.identifyMaster=$("#identifyMaster").val()
   bzFormat.lineClear=$("#lineClear").val()
   if(bzFormat.autoFormat){
     $("#pageScriptPanel").show()
   }else{
     $("#pageScriptPanel").hide()
+  }
+  if(bzFormat.lineClearChk){
+    $("#lineClearScriptPanel").show()
+  }else{
+    $("#lineClearScriptPanel").hide()
   }
 
   bzFormat.retrieveWorkerLog=$("#retrieveWorkerLog")[0].checked

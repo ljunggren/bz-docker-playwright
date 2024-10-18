@@ -596,8 +596,6 @@ var formatter={
         o="worker-1"
       }
       return `[${o}]`
-    }else{
-      debugger
     }
   },
   getGroupElement:function(o){
@@ -876,7 +874,7 @@ var formatter={
     if(!v){
       return bkFun&&bkFun()
     }
-    if(formatter.data.setting.lineClear){
+    if(formatter.data.setting.lineClearChk){
       v=v.split("\n").map(x=>formatter.lineClear(x.trim())).join("\n")
     }
     v=(fd.curEnd||"")+v
@@ -1088,7 +1086,7 @@ var formatter={
 
     function handleSetting(v){
       let x=v.match(/(http.+[\/].+)\/extension.*[?&]token\=.+#.+/gm);
-      
+
       if(x){
         x=x.find(y=>y.match(/\/run/))||x[0]
         fd.center=x.split("localized=")[1]
@@ -1096,6 +1094,7 @@ var formatter={
           fd.center=fd.center.split(/[\&\#]/)[0]
         }
         fd.center=fd.center||"Boozang"
+        fd.token=x.match(/token=([^&]+)/)[1]
         x=x.match(/(http.+[\/].+)\/extension.*[?&]token\=.+#([^\/]+)[\/]([^\/]+)([\/](m[0-9]+[\/]t[0-9]+)[\/]run)?/);
 
         fd.startUrl=x[0].split("#")[0].replace(/token=[^&#]+/,"id="+x[2]).replace(/&(self|group)=[^&#]*/g,"")+"#"+x[2]+"/"+x[3]+"/"
@@ -1864,7 +1863,11 @@ var formatter={
   },
   getCameraPath:function(v){
     let fd=formatter.data
-    return location.protocol+fd.host.replace(/^https?:/,"")+"/screenshot/"+fd.project.code+"/"+v+".jpg"
+    v= location.protocol+fd.host.replace(/^https?:/,"")+"/screenshot/"+fd.project.code+"/"+v+".jpg"
+    if(formatter.data.setting.withToken){
+      v+="?token="+fd.token
+    }
+    return v
   },
   showCompare:function(){
     let o=$(".bz-pop-panel");
